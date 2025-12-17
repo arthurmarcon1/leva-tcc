@@ -6,7 +6,7 @@ interface HeaderProps {
   showLocation?: boolean;
 }
 
-export function Header({ title = "LevaMeu", showLocation = true }: HeaderProps) {
+export function Header({ title = "Leva", showLocation = true }: HeaderProps) {
   return (
     <header className="sticky top-0 bg-background/95 backdrop-blur-lg z-40 safe-area-top">
       <div className="flex items-center justify-between px-4 py-4">

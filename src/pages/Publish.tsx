@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { CityAutocomplete } from "@/components/CityAutocomplete";
 
 const packageSizes = [
   { id: "envelope", label: "Envelope", description: "Documentos, cartas" },
@@ -84,29 +85,21 @@ export default function Publish() {
             </h2>
 
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-card shadow-card border border-border">
-                <div className="w-3 h-3 rounded-full bg-primary" />
-                <input
-                  type="text"
-                  placeholder="Cidade de origem"
+              <div className="bg-card shadow-card border border-border rounded-xl p-1">
+                <CityAutocomplete
                   value={formData.origin}
-                  onChange={(e) =>
-                    setFormData({ ...formData, origin: e.target.value })
-                  }
-                  className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+                  onChange={(value) => setFormData({ ...formData, origin: value })}
+                  placeholder="Cidade de origem"
+                  icon="origin"
                 />
               </div>
 
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-card shadow-card border border-border">
-                <div className="w-3 h-3 rounded-full border-2 border-primary bg-card" />
-                <input
-                  type="text"
-                  placeholder="Cidade de destino"
+              <div className="bg-card shadow-card border border-border rounded-xl p-1">
+                <CityAutocomplete
                   value={formData.destination}
-                  onChange={(e) =>
-                    setFormData({ ...formData, destination: e.target.value })
-                  }
-                  className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+                  onChange={(value) => setFormData({ ...formData, destination: value })}
+                  placeholder="Cidade de destino"
+                  icon="destination"
                 />
               </div>
             </div>

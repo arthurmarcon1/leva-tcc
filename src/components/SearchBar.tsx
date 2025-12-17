@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Search, ArrowRight } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { CityAutocomplete } from "./CityAutocomplete";
 
 interface SearchBarProps {
   onSearch?: (origin: string, destination: string) => void;
@@ -25,16 +26,12 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     >
       <div className="space-y-3">
         {/* Origin */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/50">
-          <div className="w-3 h-3 rounded-full bg-primary" />
-          <input
-            type="text"
-            placeholder="De onde sai?"
-            value={origin}
-            onChange={(e) => setOrigin(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
-          />
-        </div>
+        <CityAutocomplete
+          value={origin}
+          onChange={setOrigin}
+          placeholder="De onde sai?"
+          icon="origin"
+        />
 
         {/* Divider with Arrow */}
         <div className="flex items-center justify-center">
@@ -46,16 +43,12 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         </div>
 
         {/* Destination */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/50">
-          <div className="w-3 h-3 rounded-full border-2 border-primary bg-card" />
-          <input
-            type="text"
-            placeholder="Para onde vai?"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
-          />
-        </div>
+        <CityAutocomplete
+          value={destination}
+          onChange={setDestination}
+          placeholder="Para onde vai?"
+          icon="destination"
+        />
       </div>
 
       <Button onClick={handleSearch} className="w-full mt-4" size="lg">

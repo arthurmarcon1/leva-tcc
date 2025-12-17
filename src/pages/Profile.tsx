@@ -142,7 +142,7 @@ export default function Profile() {
 
         {/* About */}
         <p className="text-center text-xs text-muted-foreground pb-4">
-          LevaMeu v1.0.0 • Feito com 💚 pela comunidade
+          Leva v1.0.0 • Feito com 💚 pela comunidade
         </p>
       </main>
 
