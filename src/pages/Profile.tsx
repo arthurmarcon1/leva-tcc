@@ -11,9 +11,11 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const stats = [
   { icon: Package, label: "Envios", value: "12" },
@@ -29,6 +31,16 @@ const menuItems = [
 ];
 
 export default function Profile() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/auth");
+  };
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuário";
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <Header title="Perfil" showLocation={false} />
@@ -46,9 +58,10 @@ export default function Profile() {
               <Star size={14} className="text-primary-foreground fill-primary-foreground" />
             </div>
           </div>
-          <h2 className="text-xl font-bold text-foreground">João Silva</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Membro desde Dez 2024
+          <h2 className="text-xl font-bold text-foreground">{displayName}</h2>
+          <p className="text-sm text-muted-foreground mb-1">{user?.email}</p>
+          <p className="text-xs text-muted-foreground mb-4">
+            Membro desde {new Date(user?.created_at || "").toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
           </p>
           <Button variant="outline" size="sm">
             Editar perfil
@@ -134,6 +147,7 @@ export default function Profile() {
           <Button
             variant="ghost"
             className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={handleSignOut}
           >
             <LogOut size={18} />
             Sair da conta
