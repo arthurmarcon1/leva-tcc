@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { Home, Search, PlusCircle, Package, User } from "lucide-react";
+import { Home, Search, PlusCircle, MessageCircle, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { icon: Home, label: "Início", path: "/" },
   { icon: Search, label: "Buscar", path: "/search" },
   { icon: PlusCircle, label: "Publicar", path: "/publish", isMain: true },
-  { icon: Package, label: "Envios", path: "/shipments" },
+  { icon: MessageCircle, label: "Chat", path: "/chat" },
   { icon: User, label: "Perfil", path: "/profile" },
 ];
 
