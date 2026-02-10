@@ -10,6 +10,7 @@ import Publish from "./pages/Publish";
 import Shipments from "./pages/Shipments";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const AppRoutes = () => (
     <Route path="/publish" element={<ProtectedRoute><Publish /></ProtectedRoute>} />
     <Route path="/shipments" element={<ProtectedRoute><Shipments /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+    <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
