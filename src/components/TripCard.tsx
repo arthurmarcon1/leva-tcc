@@ -1,5 +1,9 @@
 import { motion } from "framer-motion";
-import { MapPin, Calendar, Package, User, ArrowRight } from "lucide-react";
+import { Calendar, Package, User, ArrowRight, MessageCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface TripCardProps {
   id: string;
@@ -8,6 +12,7 @@ interface TripCardProps {
   date: string;
   driverName: string;
   driverAvatar?: string;
+  driverUserId?: string;
   availableSpace: string;
   suggestedPrice: string;
   onClick?: () => void;
@@ -19,10 +24,30 @@ export function TripCard({
   date,
   driverName,
   driverAvatar,
+  driverUserId,
   availableSpace,
   suggestedPrice,
   onClick,
 }: TripCardProps) {
+  const navigate = useNavigate();
+
+  const handleSendMessage = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!driverUserId) {
+      toast.error("Não é possível iniciar conversa com este motorista");
+      return;
+    }
+    try {
+      const { data, error } = await supabase.rpc("get_or_create_conversation", {
+        other_user_id: driverUserId,
+      });
+      if (error) throw error;
+      navigate("/chat", { state: { conversationId: data } });
+    } catch {
+      toast.error("Erro ao iniciar conversa");
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -70,9 +95,20 @@ export function TripCard({
           </div>
           <span className="text-sm font-medium text-foreground">{driverName}</span>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-muted-foreground">Contribuição sugerida</p>
-          <p className="font-bold text-primary">{suggestedPrice}</p>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">Contribuição sugerida</p>
+            <p className="font-bold text-primary">{suggestedPrice}</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0 gap-1.5"
+            onClick={handleSendMessage}
+          >
+            <MessageCircle size={14} />
+            Mensagem
+          </Button>
         </div>
       </div>
     </motion.div>

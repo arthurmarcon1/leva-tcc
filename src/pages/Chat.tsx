@@ -1,14 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { ChatConversationList } from "@/components/ChatConversationList";
 import { ChatMessageView } from "@/components/ChatMessageView";
 import { useConversations, ConversationWithProfile } from "@/hooks/useConversations";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Chat() {
   const { data: conversations, isLoading } = useConversations();
   const [selected, setSelected] = useState<ConversationWithProfile | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const convId = location.state?.conversationId;
+    if (convId && conversations?.length) {
+      const found = conversations.find((c) => c.id === convId);
+      if (found) {
+        setSelected(found);
+      } else {
+        // Conversation exists but not yet in list, create a minimal entry
+        supabase
+          .from("conversations")
+          .select("*")
+          .eq("id", convId)
+          .single()
+          .then(({ data }) => {
+            if (data) {
+              setSelected({
+                id: data.id,
+                other_user_id: "",
+                other_user_name: "Motorista",
+                other_user_avatar: null,
+                updated_at: data.updated_at,
+              });
+            }
+          });
+      }
+      // Clear state to avoid re-selecting on re-renders
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, conversations]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
