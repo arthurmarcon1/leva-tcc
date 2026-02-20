@@ -1,40 +1,10 @@
 import { motion } from "framer-motion";
-import { Package, Truck, Users, ArrowRight } from "lucide-react";
+import { Package, Truck, Users } from "lucide-react";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
-import { TripCard } from "@/components/TripCard";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
-
-const mockTrips = [
-  {
-    id: "1",
-    origin: "São Paulo, SP",
-    destination: "Rio de Janeiro, RJ",
-    date: "Hoje, 14h",
-    driverName: "Carlos M.",
-    availableSpace: "Mala média",
-    suggestedPrice: "R$ 30",
-  },
-  {
-    id: "2",
-    origin: "São Paulo, SP",
-    destination: "Campinas, SP",
-    date: "Amanhã, 9h",
-    driverName: "Ana Paula",
-    availableSpace: "Caixa pequena",
-    suggestedPrice: "R$ 15",
-  },
-  {
-    id: "3",
-    origin: "São Paulo, SP",
-    destination: "Curitiba, PR",
-    date: "Sex, 16h",
-    driverName: "Roberto S.",
-    availableSpace: "Bagagem grande",
-    suggestedPrice: "R$ 50",
-  },
-];
+import { useNavigate } from "react-router-dom";
 
 const features = [
   {
@@ -55,6 +25,8 @@ const features = [
 ];
 
 export default function Index() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <Header />
@@ -99,32 +71,6 @@ export default function Index() {
           ))}
         </section>
 
-        {/* Available Trips */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-foreground">
-              Viagens disponíveis
-            </h2>
-            <Button variant="ghost" size="sm" className="text-primary">
-              Ver todas
-              <ArrowRight size={16} />
-            </Button>
-          </div>
-
-          <div className="space-y-3">
-            {mockTrips.map((trip, index) => (
-              <motion.div
-                key={trip.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-              >
-                <TripCard {...trip} />
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
         {/* CTA */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -141,7 +87,7 @@ export default function Index() {
           <p className="text-sm text-muted-foreground mb-4">
             Publique sua viagem e ajude alguém a enviar uma encomenda
           </p>
-          <Button variant="hero" className="w-full">
+          <Button variant="hero" className="w-full" onClick={() => navigate("/publish")}>
             Publicar viagem
           </Button>
         </motion.section>
