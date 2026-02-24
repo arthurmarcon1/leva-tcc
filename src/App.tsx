@@ -11,6 +11,11 @@ import Shipments from "./pages/Shipments";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
+import EditProfile from "./pages/EditProfile";
+import Notifications from "./pages/Notifications";
+import Settings from "./pages/Settings";
+import ProfileVerification from "./pages/ProfileVerification";
+import HelpSupport from "./pages/HelpSupport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +42,11 @@ const AppRoutes = () => (
     <Route path="/publish" element={<ProtectedRoute><Publish /></ProtectedRoute>} />
     <Route path="/shipments" element={<ProtectedRoute><Shipments /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+    <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+    <Route path="/profile/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+    <Route path="/profile/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+    <Route path="/profile/verification" element={<ProtectedRoute><ProfileVerification /></ProtectedRoute>} />
+    <Route path="/profile/help" element={<ProtectedRoute><HelpSupport /></ProtectedRoute>} />
     <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>

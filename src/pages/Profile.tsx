@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -15,7 +16,9 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const stats = [
   { icon: Package, label: "Envios", value: "12" },
@@ -24,22 +27,34 @@ const stats = [
 ];
 
 const menuItems = [
-  { icon: Bell, label: "Notificações", badge: "3" },
-  { icon: Shield, label: "Verificação de perfil" },
-  { icon: Settings, label: "Configurações" },
-  { icon: HelpCircle, label: "Ajuda e suporte" },
+  { icon: Bell, label: "Notificações", path: "/profile/notifications" },
+  { icon: Shield, label: "Verificação de perfil", path: "/profile/verification" },
+  { icon: Settings, label: "Configurações", path: "/profile/settings" },
+  { icon: HelpCircle, label: "Ajuda e suporte", path: "/profile/help" },
 ];
 
 export default function Profile() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({ full_name: null, avatar_url: null });
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("full_name, avatar_url").eq("user_id", user.id).single().then(({ data }) => {
+      if (data) setProfile(data);
+    });
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false).then(({ count }) => {
+      setUnreadCount(count || 0);
+    });
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/auth");
   };
 
-  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuário";
+  const displayName = profile.full_name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuário";
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -52,8 +67,13 @@ export default function Profile() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-card rounded-2xl p-6 shadow-card border border-border text-center"
         >
-          <div className="w-24 h-24 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4 relative">
-            <User size={40} className="text-muted-foreground" />
+          <div className="relative mx-auto mb-4 w-24 h-24">
+            <Avatar className="w-24 h-24 border-4 border-primary/20">
+              <AvatarImage src={profile.avatar_url || undefined} />
+              <AvatarFallback className="text-2xl bg-secondary text-muted-foreground">
+                {displayName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full gradient-primary flex items-center justify-center shadow-soft">
               <Star size={14} className="text-primary-foreground fill-primary-foreground" />
             </div>
@@ -63,7 +83,7 @@ export default function Profile() {
           <p className="text-xs text-muted-foreground mb-4">
             Membro desde {new Date(user?.created_at || "").toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
           </p>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => navigate("/profile/edit")}>
             Editar perfil
           </Button>
         </motion.div>
@@ -118,6 +138,7 @@ export default function Profile() {
           {menuItems.map((item, index) => (
             <button
               key={item.label}
+              onClick={() => navigate(item.path)}
               className={`w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors ${
                 index !== menuItems.length - 1 ? "border-b border-border" : ""
               }`}
@@ -128,9 +149,9 @@ export default function Profile() {
               <span className="flex-1 text-left font-medium text-foreground">
                 {item.label}
               </span>
-              {item.badge && (
+              {item.label === "Notificações" && unreadCount > 0 && (
                 <span className="w-6 h-6 rounded-full bg-accent text-accent-foreground text-xs font-semibold flex items-center justify-center">
-                  {item.badge}
+                  {unreadCount}
                 </span>
               )}
               <ChevronRight size={18} className="text-muted-foreground" />
