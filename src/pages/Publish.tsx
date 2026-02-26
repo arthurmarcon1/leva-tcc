@@ -6,6 +6,9 @@ import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { CityAutocomplete } from "@/components/CityAutocomplete";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const packageSizes = [
   { id: "envelope", label: "Envelope", description: "Documentos, cartas" },
@@ -16,7 +19,10 @@ const packageSizes = [
 
 export default function Publish() {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     origin: "",
     destination: "",
@@ -27,21 +33,35 @@ export default function Publish() {
     notes: "",
   });
 
-  const handleSubmit = () => {
-    toast({
-      title: "Viagem publicada!",
-      description: "Sua viagem está disponível para envios.",
-    });
-    setStep(1);
-    setFormData({
-      origin: "",
-      destination: "",
-      date: "",
-      time: "",
-      packageSize: "",
-      suggestedPrice: "",
-      notes: "",
-    });
+  const handleSubmit = async () => {
+    if (!user) return;
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("trips").insert({
+        user_id: user.id,
+        origin: formData.origin,
+        destination: formData.destination,
+        trip_date: formData.date,
+        trip_time: formData.time || null,
+        package_size: formData.packageSize,
+        suggested_price: parseFloat(formData.suggestedPrice) || 0,
+        notes: formData.notes || null,
+      });
+      if (error) throw error;
+      toast({
+        title: "Viagem publicada!",
+        description: "Sua viagem está disponível para envios.",
+      });
+      navigate("/search");
+    } catch (err) {
+      toast({
+        title: "Erro ao publicar",
+        description: "Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -281,8 +301,8 @@ export default function Publish() {
               <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
                 Voltar
               </Button>
-              <Button onClick={handleSubmit} variant="hero" className="flex-1">
-                Publicar
+              <Button onClick={handleSubmit} variant="hero" className="flex-1" disabled={submitting}>
+                {submitting ? "Publicando..." : "Publicar"}
               </Button>
             </div>
           </motion.div>
