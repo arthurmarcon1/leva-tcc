@@ -133,6 +133,51 @@ export type Database = {
         }
         Relationships: []
       }
+      trips: {
+        Row: {
+          created_at: string
+          destination: string
+          id: string
+          notes: string | null
+          origin: string
+          package_size: string
+          status: string
+          suggested_price: number
+          trip_date: string
+          trip_time: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destination: string
+          id?: string
+          notes?: string | null
+          origin: string
+          package_size: string
+          status?: string
+          suggested_price?: number
+          trip_date: string
+          trip_time?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destination?: string
+          id?: string
+          notes?: string | null
+          origin?: string
+          package_size?: string
+          status?: string
+          suggested_price?: number
+          trip_date?: string
+          trip_time?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
