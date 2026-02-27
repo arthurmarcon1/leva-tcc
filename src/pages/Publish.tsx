@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Calendar, Package, DollarSign, ArrowRight, Check } from "lucide-react";
+import { MapPin, Calendar as CalendarIcon, Package, DollarSign, ArrowRight, Check } from "lucide-react";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,11 @@ import { CityAutocomplete } from "@/components/CityAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const packageSizes = [
   { id: "envelope", label: "Envelope", description: "Documentos, cartas" },
@@ -129,14 +134,38 @@ export default function Publish() {
                 <label className="text-xs text-muted-foreground mb-1 block">
                   Data
                 </label>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) =>
-                    setFormData({ ...formData, date: e.target.value })
-                  }
-                  className="w-full bg-transparent outline-none text-foreground"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start text-left font-normal p-0 h-auto hover:bg-transparent",
+                        !formData.date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon size={16} className="mr-2 shrink-0" />
+                      {formData.date
+                        ? format(new Date(formData.date + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })
+                        : "Selecionar"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.date ? new Date(formData.date + "T12:00:00") : undefined}
+                      onSelect={(date) =>
+                        setFormData({
+                          ...formData,
+                          date: date ? format(date, "yyyy-MM-dd") : "",
+                        })
+                      }
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      locale={ptBR}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="p-4 rounded-xl bg-card shadow-card border border-border">
                 <label className="text-xs text-muted-foreground mb-1 block">
@@ -284,7 +313,7 @@ export default function Publish() {
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <Calendar size={16} className="text-primary" />
+                <CalendarIcon size={16} className="text-primary" />
                 <span className="text-foreground">
                   {formData.date} às {formData.time}
                 </span>
