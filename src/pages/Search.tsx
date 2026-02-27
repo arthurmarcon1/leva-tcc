@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useLocation } from "react-router-dom";
 
 const packageLabels: Record<string, string> = {
   envelope: "Envelope",
@@ -32,7 +33,11 @@ interface TripWithProfile {
 }
 
 export default function Search() {
+  const location = useLocation();
+  const navState = location.state as { origin?: string; destination?: string } | null;
   const [searchQuery, setSearchQuery] = useState("");
+  const [originFilter, setOriginFilter] = useState(navState?.origin || "");
+  const [destinationFilter, setDestinationFilter] = useState(navState?.destination || "");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [trips, setTrips] = useState<TripWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,11 +100,16 @@ export default function Search() {
     return () => { supabase.removeChannel(channel); };
   }, [activeFilter]);
 
-  const filteredTrips = trips.filter(
-    (t) =>
+  const filteredTrips = trips.filter((t) => {
+    const matchesSearch = !searchQuery ||
       t.origin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.destination.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      t.destination.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesOrigin = !originFilter ||
+      t.origin.toLowerCase().includes(originFilter.toLowerCase());
+    const matchesDestination = !destinationFilter ||
+      t.destination.toLowerCase().includes(destinationFilter.toLowerCase());
+    return matchesSearch && matchesOrigin && matchesDestination;
+  });
 
   const formatTripDate = (date: string, time: string | null) => {
     try {
@@ -135,6 +145,24 @@ export default function Search() {
             )}
           </div>
         </motion.div>
+
+        {/* Active city filters */}
+        {(originFilter || destinationFilter) && (
+          <div className="flex flex-wrap gap-2">
+            {originFilter && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                De: {originFilter}
+                <button onClick={() => setOriginFilter("")}><X size={14} /></button>
+              </span>
+            )}
+            {destinationFilter && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                Para: {destinationFilter}
+                <button onClick={() => setDestinationFilter("")}><X size={14} /></button>
+              </span>
+            )}
+          </div>
+        )}
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
           {filters.map((filter) => (
