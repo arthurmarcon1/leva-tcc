@@ -26,7 +26,7 @@ export function Header({ title = "Leva", showLocation = true }: HeaderProps) {
               className="flex items-center gap-1 text-sm text-muted-foreground mt-0.5"
             >
               <MapPin size={14} />
-              <span>São Paulo, SP</span>
+              <span>Região Sul</span>
             </motion.div>
           )}
         </div>

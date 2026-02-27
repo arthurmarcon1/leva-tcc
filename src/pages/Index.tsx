@@ -45,7 +45,9 @@ export default function Index() {
             Economia colaborativa e sustentável
           </p>
           
-          <SearchBar />
+          <SearchBar onSearch={(origin, destination) => {
+            navigate("/search", { state: { origin, destination } });
+          }} />
         </motion.section>
 
         {/* Features */}
