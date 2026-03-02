@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Package, User, ArrowRight, MessageCircle } from "lucide-react";
+import { Calendar, Package, User, ArrowRight, MessageCircle, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { ShipmentRequestDialog } from "@/components/ShipmentRequestDialog";
 
 interface TripCardProps {
   id: string;
@@ -19,6 +21,7 @@ interface TripCardProps {
 }
 
 export function TripCard({
+  id,
   origin,
   destination,
   date,
@@ -29,6 +32,7 @@ export function TripCard({
   suggestedPrice,
   onClick,
 }: TripCardProps) {
+  const [showRequestDialog, setShowRequestDialog] = useState(false);
   const navigate = useNavigate();
 
   const handleSendMessage = async (e: React.MouseEvent) => {
@@ -95,7 +99,7 @@ export function TripCard({
           </div>
           <span className="text-sm font-medium text-foreground">{driverName}</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="text-right">
             <p className="text-xs text-muted-foreground">Contribuição sugerida</p>
             <p className="font-bold text-primary">{suggestedPrice}</p>
@@ -107,10 +111,29 @@ export function TripCard({
             onClick={handleSendMessage}
           >
             <MessageCircle size={14} />
-            Mensagem
+          </Button>
+          <Button
+            size="sm"
+            className="shrink-0 gap-1.5"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowRequestDialog(true);
+            }}
+          >
+            <Send size={14} />
+            Enviar
           </Button>
         </div>
       </div>
+
+      <ShipmentRequestDialog
+        open={showRequestDialog}
+        onOpenChange={setShowRequestDialog}
+        tripId={id}
+        driverUserId={driverUserId || ""}
+        origin={origin}
+        destination={destination}
+      />
     </motion.div>
   );
 }
