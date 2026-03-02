@@ -133,6 +133,50 @@ export type Database = {
         }
         Relationships: []
       }
+      shipment_requests: {
+        Row: {
+          created_at: string
+          description: string
+          driver_id: string
+          id: string
+          package_size: string
+          requester_id: string
+          status: string
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          driver_id: string
+          id?: string
+          package_size: string
+          requester_id: string
+          status?: string
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          driver_id?: string
+          id?: string
+          package_size?: string
+          requester_id?: string
+          status?: string
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_requests_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trips: {
         Row: {
           created_at: string
