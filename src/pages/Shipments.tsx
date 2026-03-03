@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Package, Clock, CheckCircle2, XCircle, Truck, Loader2, Check, X } from "lucide-react";
+import { Package, Clock, CheckCircle2, XCircle, Truck, Loader2, Check, X, Star } from "lucide-react";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ReviewDialog } from "@/components/ReviewDialog";
 
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   pending: { label: "Pendente", color: "bg-accent/10 text-accent", icon: Clock },
@@ -39,6 +40,12 @@ export default function Shipments() {
   const [sentRequests, setSentRequests] = useState<ShipmentRequest[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<ShipmentRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reviewTarget, setReviewTarget] = useState<{
+    shipmentId: string;
+    reviewedId: string;
+    reviewedName: string;
+  } | null>(null);
+  const [existingReviews, setExistingReviews] = useState<Set<string>>(new Set());
 
   const fetchRequests = async () => {
     if (!user) return;
@@ -90,8 +97,20 @@ export default function Shipments() {
     setLoading(false);
   };
 
+  const fetchExistingReviews = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("reviews")
+      .select("shipment_request_id, reviewer_id")
+      .eq("reviewer_id", user.id);
+    if (data) {
+      setExistingReviews(new Set(data.map((r) => r.shipment_request_id)));
+    }
+  };
+
   useEffect(() => {
     fetchRequests();
+    fetchExistingReviews();
   }, [user]);
 
   useEffect(() => {
@@ -207,6 +226,34 @@ export default function Shipments() {
             </Button>
           </div>
         )}
+
+        {/* Review button for delivered requests */}
+        {request.status === "delivered" && !existingReviews.has(request.id) && (
+          <div className="mt-3 pt-3 border-t border-border">
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full gap-1"
+              onClick={() =>
+                setReviewTarget({
+                  shipmentId: request.id,
+                  reviewedId: isDriver ? request.requester_id : request.driver_id,
+                  reviewedName: isDriver ? (request.requester_name || "Remetente") : (request.driver_name || "Motorista"),
+                })
+              }
+            >
+              <Star size={14} /> Avaliar {isDriver ? "remetente" : "motorista"}
+            </Button>
+          </div>
+        )}
+
+        {request.status === "delivered" && existingReviews.has(request.id) && (
+          <div className="mt-3 pt-3 border-t border-border text-center">
+            <span className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+              <CheckCircle2 size={12} /> Avaliação enviada
+            </span>
+          </div>
+        )}
       </motion.div>
     );
   };
@@ -287,6 +334,15 @@ export default function Shipments() {
           </Tabs>
         )}
       </main>
+
+      <ReviewDialog
+        open={!!reviewTarget}
+        onOpenChange={(open) => !open && setReviewTarget(null)}
+        shipmentRequestId={reviewTarget?.shipmentId || ""}
+        reviewedId={reviewTarget?.reviewedId || ""}
+        reviewedName={reviewTarget?.reviewedName || ""}
+        onReviewSubmitted={fetchExistingReviews}
+      />
 
       <BottomNav />
     </div>
