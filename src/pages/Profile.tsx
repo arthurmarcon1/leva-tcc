@@ -104,7 +104,11 @@ export default function Profile() {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-3 gap-3"
         >
-          {stats.map((stat) => (
+          {[
+            { icon: Package, label: "Envios", value: String(realStats.shipments) },
+            { icon: Car, label: "Viagens", value: String(realStats.trips) },
+            { icon: Star, label: "Avaliação", value: realStats.rating },
+          ].map((stat) => (
             <div
               key={stat.label}
               className="bg-card rounded-xl p-4 text-center shadow-card border border-border"
@@ -116,12 +120,11 @@ export default function Profile() {
           ))}
         </motion.div>
 
-        {/* Verification Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="gradient-primary rounded-xl p-4 flex items-center gap-3"
+        {/* Reviews */}
+        {user && <ProfileReviews userId={user.id} />}
+
+        {/* Trips */}
+        {user && <ProfileTrips userId={user.id} />}
         >
           <div className="w-12 h-12 rounded-full bg-primary-foreground/20 flex items-center justify-center">
             <Shield size={24} className="text-primary-foreground" />
