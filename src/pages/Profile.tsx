@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  User,
   Settings,
   Star,
   Package,
@@ -19,12 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-
-const stats = [
-  { icon: Package, label: "Envios", value: "12" },
-  { icon: Car, label: "Viagens", value: "5" },
-  { icon: Star, label: "Avaliação", value: "4.8" },
-];
+import { ProfileReviews } from "@/components/ProfileReviews";
+import { ProfileTrips } from "@/components/ProfileTrips";
 
 const menuItems = [
   { icon: Bell, label: "Notificações", path: "/profile/notifications" },
@@ -38,6 +33,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({ full_name: null, avatar_url: null });
   const [unreadCount, setUnreadCount] = useState(0);
+  const [realStats, setRealStats] = useState({ shipments: 0, trips: 0, rating: "—" });
 
   useEffect(() => {
     if (!user) return;
@@ -46,6 +42,19 @@ export default function Profile() {
     });
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false).then(({ count }) => {
       setUnreadCount(count || 0);
+    });
+    // Real stats
+    supabase.from("shipment_requests").select("id", { count: "exact", head: true }).eq("requester_id", user.id).then(({ count }) => {
+      setRealStats((prev) => ({ ...prev, shipments: count || 0 }));
+    });
+    supabase.from("trips").select("id", { count: "exact", head: true }).eq("user_id", user.id).then(({ count }) => {
+      setRealStats((prev) => ({ ...prev, trips: count || 0 }));
+    });
+    supabase.from("reviews").select("rating").eq("reviewed_id", user.id).then(({ data }) => {
+      if (data && data.length > 0) {
+        const avg = (data.reduce((s, r) => s + r.rating, 0) / data.length).toFixed(1);
+        setRealStats((prev) => ({ ...prev, rating: avg }));
+      }
     });
   }, [user]);
 
