@@ -23,7 +23,6 @@ import { ProfileTrips } from "@/components/ProfileTrips";
 
 const menuItems = [
   { icon: Bell, label: "Notificações", path: "/profile/notifications" },
-  { icon: Shield, label: "Verificação de perfil", path: "/profile/verification" },
   { icon: Settings, label: "Configurações", path: "/profile/settings" },
   { icon: HelpCircle, label: "Ajuda e suporte", path: "/profile/help" },
 ];
@@ -124,26 +123,6 @@ export default function Profile() {
         {user && <ProfileReviews userId={user.id} />}
 
 
-        {/* Verification Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="gradient-primary rounded-xl p-4 flex items-center gap-3"
-        >
-          <div className="w-12 h-12 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-            <Shield size={24} className="text-primary-foreground" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-primary-foreground">
-              Verifique seu perfil
-            </h3>
-            <p className="text-xs text-primary-foreground/80">
-              Aumente a confiança da comunidade
-            </p>
-          </div>
-          <ChevronRight className="text-primary-foreground" />
-        </motion.div>
 
         {/* Menu */}
         <motion.div
