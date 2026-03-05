@@ -7,7 +7,6 @@ import {
   Car,
   ChevronRight,
   Bell,
-  Shield,
   HelpCircle,
   LogOut,
 } from "lucide-react";
