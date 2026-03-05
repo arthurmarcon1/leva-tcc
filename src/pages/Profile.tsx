@@ -123,8 +123,13 @@ export default function Profile() {
         {/* Reviews */}
         {user && <ProfileReviews userId={user.id} />}
 
-        {/* Trips */}
-        {user && <ProfileTrips userId={user.id} />}
+
+        {/* Verification Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="gradient-primary rounded-xl p-4 flex items-center gap-3"
         >
           <div className="w-12 h-12 rounded-full bg-primary-foreground/20 flex items-center justify-center">
             <Shield size={24} className="text-primary-foreground" />
