@@ -117,6 +117,7 @@ export default function Index() {
                       </span>
                     </div>
                   </div>
+                  <TripRequestsBell tripId={trip.id} />
                 </div>
               ))}
             </div>
