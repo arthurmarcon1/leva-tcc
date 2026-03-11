@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Package, Truck, Users, MapPin, Calendar, ChevronRight } from "lucide-react";
+import { TripRequestsBell } from "@/components/TripRequestsBell";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { BottomNav } from "@/components/BottomNav";
