@@ -1,10 +1,13 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Package, Truck, Users } from "lucide-react";
+import { Package, Truck, Users, MapPin, Calendar, ChevronRight } from "lucide-react";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const features = [
   {
@@ -24,8 +27,31 @@ const features = [
   },
 ];
 
+interface Trip {
+  id: string;
+  origin: string;
+  destination: string;
+  trip_date: string;
+  status: string;
+  suggested_price: number;
+}
+
 export default function Index() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [myTrips, setMyTrips] = useState<Trip[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("trips")
+      .select("id, origin, destination, trip_date, status, suggested_price")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .order("trip_date", { ascending: true })
+      .limit(5)
+      .then(({ data }) => setMyTrips(data || []));
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -49,6 +75,52 @@ export default function Index() {
             navigate("/search", { state: { origin, destination } });
           }} />
         </motion.section>
+
+        {/* Suas Viagens */}
+        {myTrips.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-card rounded-xl p-4 shadow-card border border-border"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <Truck size={16} className="text-primary" />
+                Suas Viagens
+              </h3>
+              <button
+                onClick={() => navigate("/profile")}
+                className="text-xs text-primary font-medium flex items-center gap-0.5"
+              >
+                Ver todas <ChevronRight size={12} />
+              </button>
+            </div>
+            <div className="space-y-2">
+              {myTrips.map((trip) => (
+                <div key={trip.id} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1 text-sm font-medium text-foreground">
+                      <MapPin size={12} className="text-primary shrink-0" />
+                      <span className="truncate">{trip.origin}</span>
+                      <span className="text-muted-foreground mx-1">→</span>
+                      <span className="truncate">{trip.destination}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Calendar size={10} />
+                        {new Date(trip.trip_date).toLocaleDateString("pt-BR")}
+                      </span>
+                      <span className="text-xs font-medium text-primary">
+                        R$ {trip.suggested_price}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
         {/* Features */}
         <section className="grid grid-cols-3 gap-3">
