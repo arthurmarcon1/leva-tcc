@@ -1,4 +1,4 @@
-# 🚚 Leva – Transporte Colaborativo de Encomendas
+#  Leva – Transporte Colaborativo de Encomendas
 
 Aplicação web desenvolvida como Trabalho de Graduação (TG) no curso de Sistemas de Informação da Universidade Federal de Santa Maria (UFSM).
 
@@ -6,7 +6,7 @@ O **Leva** é uma plataforma colaborativa, sem fins lucrativos, que conecta usu�
 
 ---
 
-## 📌 Sobre o Projeto
+##  Sobre o Projeto
 
 Este projeto propõe uma solução baseada em economia colaborativa para o transporte de objetos entre usuários, aproveitando deslocamentos já existentes.
 
@@ -14,7 +14,7 @@ Diferente de plataformas tradicionais de transporte, o foco está exclusivamente
 
 ---
 
-## 🧠 Contexto Acadêmico
+##  Contexto Acadêmico
 
 - **Curso:** Sistemas de Informação  
 - **Instituição:** Universidade Federal de Santa Maria (UFSM)  
@@ -23,7 +23,7 @@ Diferente de plataformas tradicionais de transporte, o foco está exclusivamente
 
 ---
 
-## ⚙️ Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 - **React**
 - **TypeScript**
@@ -33,7 +33,7 @@ Diferente de plataformas tradicionais de transporte, o foco está exclusivamente
 
 ---
 
-## 🚀 Como rodar o projeto
+##  Como rodar o projeto
 
 ### Pré-requisitos
 - Node.js
